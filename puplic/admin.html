@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Update Receipt</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            background: #ffe0b2;
+            max-width: 420px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN FORM -->
+    <div class="container" id="loginDiv">
+        <h1>Admin Login</h1>
+        <input type="text" id="username" placeholder="Admin Username" value="1234">
+        <input type="password" id="password" placeholder="Admin Password" value="1234">
+        <button onclick="login()">Login</button>
+        <p id="loginError" style="color:red;"></p>
+    </div>
+
+    <!-- ADMIN PANEL (HIDDEN UNTIL LOGIN) -->
+    <div class="container" id="panelDiv" style="display:none;">
+        <h1>Update Receipt</h1>
+
+        <input id="payment" placeholder="Payment Amount">
+        <input id="currency" placeholder="Currency (USD)">
+        <input id="made_by" placeholder="Made By">
+        <input id="receiver_name" placeholder="Receiver Name">
+        <input id="account_number" placeholder="Receiver Account Number">
+        <input id="reason" placeholder="Reason For Payment">
+
+        <button onclick="updateReceipt()">Update Receipt</button>
+        <button onclick="logout()" style="background:#f44336;">Logout</button>
+        <p id="updateMsg" style="color:green;"></p>
+    </div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const auth = btoa(username + ":" + password);
+
+            try {
+                const res = await fetch("/api/admin/update-receipt", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Basic " + auth,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        test: true
+                    })
+                });
+
+                if (res.ok) {
+                    localStorage.setItem("adminAuth", auth);
+                    document.getElementById("loginDiv").style.display = "none";
+                    document.getElementById("panelDiv").style.display = "block";
+                    loadReceipt();
+                } else {
+                    document.getElementById("loginError").innerText = "Invalid username or password.";
+                }
+            } catch (err) {
+                document.getElementById("loginError").innerText = "Error connecting to server.";
+            }
+        }
+
+        async function loadReceipt() {
+            const res = await fetch("/api/receipt");
+            const receipt = await res.json();
+
+            document.getElementById("payment").value = receipt.payment || "";
+            document.getElementById("currency").value = receipt.currency || "";
+            document.getElementById("made_by").value = receipt.made_by || "";
+            document.getElementById("receiver_name").value = receipt.receiver_name || "";
+            document.getElementById("account_number").value = receipt.account_number || "";
+            document.getElementById("reason").value = receipt.reason || "";
+        }
+
+        async function updateReceipt() {
+            const receipt = {
+                payment: document.getElementById("payment").value,
+                currency: document.getElementById("currency").value,
+                made_by: document.getElementById("made_by").value,
+                receiver_name: document.getElementById("receiver_name").value,
+                account_number: document.getElementById("account_number").value,
+                reason: document.getElementById("reason").value
+            };
+
+            const auth = localStorage.getItem("adminAuth");
+            if (!auth) return alert("Not authenticated");
+
+            try {
+                const res = await fetch("/api/admin/update-receipt", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Basic " + auth,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(receipt)
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById("updateMsg").innerText = "Receipt updated successfully!";
+                } else {
+                    alert("Failed to update receipt.");
+                }
+            } catch (err) {
+                alert("Error: " + err);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("adminAuth");
+            document.getElementById("panelDiv").style.display = "none";
+            document.getElementById("loginDiv").style.display = "block";
+            document.getElementById("username").value = "1234";
+            document.getElementById("password").value = "1234";
+        }
+
+        window.onload = () => {
+            const auth = localStorage.getItem("adminAuth");
+            if (auth) {
+                document.getElementById("loginDiv").style.display = "none";
+                document.getElementById("panelDiv").style.display = "block";
+                loadReceipt();
+            }
+        };
+    </script>
+
+</body>
+
+</html>

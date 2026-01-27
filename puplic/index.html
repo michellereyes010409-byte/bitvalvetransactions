@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Receipt</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            background: #ffe0b2;
+            max-width: 420px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .details,
+        .info,
+        .additional {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        
+        strong {
+            color: #333;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Transaction Receipt</h1>
+
+        <div class="details">
+            <strong>Payment:</strong> <span id="payment"></span> <span id="currency"></span><br>
+            <strong>Made By:</strong> <span id="made_by"></span><br>
+            <strong>Account Number:</strong> Payescrom.com. Payment processed via PaxEscrowPay.<br>
+            <strong>Transaction Status:</strong> <span id="status"></span>
+        </div>
+
+        <div class="info">
+            <strong>Receiver's Information:</strong><br>
+            <strong>Receiver's Name:</strong> <span id="receiver_name"></span><br>
+            <strong>Account Number:</strong> <span id="account_number"></span><br>
+            <strong>Amount:</strong> <span id="amount"></span> <span id="currency2"></span>
+        </div>
+
+        <div class="additional">
+            <strong>Additional Information:</strong><br>
+            <strong>Reference Number:</strong> MABG<br>
+            <strong>Reason For Payment:</strong> <span id="reason"></span><br>
+            <strong>Action Required:</strong> Payment is Active. Receiver must authorise/decline using provided link.
+        </div>
+
+        <button onclick="window.location.href='noones.html'">Proceed</button>
+    </div>
+
+    <script>
+        fetch("/api/receipt")
+            .then(res => res.json())
+            .then(receipt => {
+                document.getElementById("payment").innerText = receipt.payment || "";
+                document.getElementById("currency").innerText = receipt.currency || "";
+                document.getElementById("currency2").innerText = receipt.currency || "";
+                document.getElementById("amount").innerText = receipt.payment || "";
+                document.getElementById("made_by").innerText = receipt.made_by || "";
+                document.getElementById("receiver_name").innerText = receipt.receiver_name || "";
+                document.getElementById("account_number").innerText = receipt.account_number || "";
+                document.getElementById("reason").innerText = receipt.reason || "";
+                document.getElementById("status").innerText = receipt.status || "";
+            });
+    </script>
+
+</body>
+
+</html>
